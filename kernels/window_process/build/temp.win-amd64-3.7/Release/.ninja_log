@@ -1,0 +1,3 @@
+# ninja log v5
+0	11643	6812048131224198	F:/AI/mask_classification/kernels/window_process/build/temp.win-amd64-3.7/Release/swin_window_process.obj	c850008c46121c8f
+41	35603	6812048370428172	F:/AI/mask_classification/kernels/window_process/build/temp.win-amd64-3.7/Release/swin_window_process_kernel.obj	95eca5c6940fe881
