@@ -19,7 +19,7 @@ _C.BASE = ['']
 # -----------------------------------------------------------------------------
 _C.DATA = CN()
 # Batch size for a single GPU, could be overwritten by command line argument
-_C.DATA.BATCH_SIZE = 16
+_C.DATA.BATCH_SIZE = 1
 # Path to dataset, could be overwritten by command line argument
 _C.DATA.DATA_PATH = ''
 # Dataset name
@@ -41,7 +41,7 @@ _C.DATA.NUM_WORKERS = 0
 _C.DATA.MEAN = [0.6756, 0.5652, 0.5181]
 _C.DATA.STD = [0.2153, 0.2033, 0.2087]
 _C.DATA.ROOT_PATH = 'data/train'
-_C.DATA.LABEL_FILE = 'data/train/labels.txt'
+_C.DATA.LABEL_FILE = 'data/train/train_label.csv'
 _C.DATA.K_FOLD = 5
 
 # -----------------------------------------------------------------------------
@@ -58,7 +58,7 @@ _C.MODEL.PRETRAINED = 'weights/swinv2_tiny_patch4_window8_256.pth'
 # Checkpoint to resume, could be overwritten by command line argument
 _C.MODEL.RESUME = ''
 # Number of classes, overwritten in data preparation
-_C.MODEL.NUM_CLASSES = 3
+_C.MODEL.NUM_CLASSES = 1
 # Dropout rate
 _C.MODEL.DROP_RATE = 0.0
 # Drop path rate
@@ -141,7 +141,7 @@ _C.MODEL.SWIN_MLP.PATCH_NORM = True
 # -----------------------------------------------------------------------------
 _C.TRAIN = CN()
 _C.TRAIN.START_EPOCH = 0
-_C.TRAIN.EPOCHS = 10
+_C.TRAIN.EPOCHS = 1
 _C.TRAIN.WARMUP_EPOCHS = 5
 _C.TRAIN.WEIGHT_DECAY = 0.05
 _C.TRAIN.BASE_LR = 5e-4

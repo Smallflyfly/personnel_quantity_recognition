@@ -7,7 +7,7 @@
 from timm.data import create_transform, Mixup
 from torch.utils.data import DataLoader
 
-from dataset import MaskDataset
+from dataset import PersonDataset
 
 
 def build_dataset(is_train=True, config=None, image_list=None):
@@ -24,10 +24,10 @@ def build_dataset(is_train=True, config=None, image_list=None):
             mean=config.DATA.MEAN,
             std=config.DATA.STD
         )
-        dataset = MaskDataset(config.DATA.ROOT_PATH, config.DATA.LABEL_FILE, width=config.DATA.IMG_SIZE,
+        dataset = PersonDataset(config.DATA.ROOT_PATH, config.DATA.LABEL_FILE, width=config.DATA.IMG_SIZE,
                               height=config.DATA.IMG_SIZE, transforms=transforms, image_list=image_list)
     else:
-        dataset = MaskDataset(config.DATA.ROOT_PATH, config.DATA.LABEL_FILE, width=config.DATA.IMG_SIZE,
+        dataset = PersonDataset(config.DATA.ROOT_PATH, config.DATA.LABEL_FILE, width=config.DATA.IMG_SIZE,
                               height=config.DATA.IMG_SIZE, transforms=None, image_list=image_list)
     return dataset
 
@@ -45,13 +45,13 @@ def build_dataloader(config):
         drop_last=True
     )
     mixup_fn = None
-    mixup_active = config.AUG.MIXUP > 0 or config.AUG.CUTMIX > 0. or config.AUG.CUTMIX_MINMAX is not None
-    if mixup_active:
-        mixup_fn = Mixup(
-            mixup_alpha=config.AUG.MIXUP, cutmix_alpha=config.AUG.CUTMIX, cutmix_minmax=config.AUG.CUTMIX_MINMAX,
-            prob=config.AUG.MIXUP_PROB, switch_prob=config.AUG.MIXUP_SWITCH_PROB, mode=config.AUG.MIXUP_MODE,
-            label_smoothing=config.MODEL.LABEL_SMOOTHING, num_classes=config.MODEL.NUM_CLASSES
-        )
+    # mixup_active = config.AUG.MIXUP > 0 or config.AUG.CUTMIX > 0. or config.AUG.CUTMIX_MINMAX is not None
+    # if mixup_active:
+    #     mixup_fn = Mixup(
+    #         mixup_alpha=config.AUG.MIXUP, cutmix_alpha=config.AUG.CUTMIX, cutmix_minmax=config.AUG.CUTMIX_MINMAX,
+    #         prob=config.AUG.MIXUP_PROB, switch_prob=config.AUG.MIXUP_SWITCH_PROB, mode=config.AUG.MIXUP_MODE,
+    #         label_smoothing=config.MODEL.LABEL_SMOOTHING, num_classes=config.MODEL.NUM_CLASSES
+    #     )
     return dataset_loader, mixup_fn
 
 
@@ -66,12 +66,12 @@ def build_dataloader_k(config, is_train=True, image_list=None, batch_size=1):
         drop_last=True
     )
     mixup_fn = None
-    if is_train:
-        mixup_active = config.AUG.MIXUP > 0 or config.AUG.CUTMIX > 0. or config.AUG.CUTMIX_MINMAX is not None
-        if mixup_active:
-            mixup_fn = Mixup(
-                mixup_alpha=config.AUG.MIXUP, cutmix_alpha=config.AUG.CUTMIX, cutmix_minmax=config.AUG.CUTMIX_MINMAX,
-                prob=config.AUG.MIXUP_PROB, switch_prob=config.AUG.MIXUP_SWITCH_PROB, mode=config.AUG.MIXUP_MODE,
-                label_smoothing=config.MODEL.LABEL_SMOOTHING, num_classes=config.MODEL.NUM_CLASSES
-            )
+    # if is_train:
+    #     mixup_active = config.AUG.MIXUP > 0 or config.AUG.CUTMIX > 0. or config.AUG.CUTMIX_MINMAX is not None
+    #     if mixup_active:
+    #         mixup_fn = Mixup(
+    #             mixup_alpha=config.AUG.MIXUP, cutmix_alpha=config.AUG.CUTMIX, cutmix_minmax=config.AUG.CUTMIX_MINMAX,
+    #             prob=config.AUG.MIXUP_PROB, switch_prob=config.AUG.MIXUP_SWITCH_PROB, mode=config.AUG.MIXUP_MODE,
+    #             label_smoothing=config.MODEL.LABEL_SMOOTHING, num_classes=config.MODEL.NUM_CLASSES
+    #         )
     return dataset_loader, mixup_fn

@@ -6,14 +6,18 @@
 """
 import os
 
+import pandas
 from torch.utils.data import Dataset
 from torchvision import transforms as transform
 
 from utils import resize_image
 
 
+MOD = 500.0
+
+
 class PersonDataset(Dataset):
-    def __init__(self, root_path, label_file, image_list=None, mode='train', width=640, height=640, transforms=None):
+    def __init__(self, root_path, label_file, image_list=None, mode='train', width=256, height=256, transforms=None):
         self.root_path = root_path
         self.label_file = label_file
         self.image_list = image_list
@@ -38,13 +42,13 @@ class PersonDataset(Dataset):
         self._process_data()
 
     def _process_label(self):
-        with open(self.label_file, 'r') as f:
-            lines = f.readlines()
-            for line in lines:
-                line = line.strip().split()
-                file = line[0]
-                label = int(line[1])
-                self.label_map[file] = label
+        print(self.label_file)
+        dataframe = pandas.read_csv(self.label_file, 'r', engine='python', error_bad_lines=False, delimiter=',')
+        print(dataframe.keys())
+        filenames = dataframe['name']
+        labels = dataframe['count']
+        for filename, label in zip(filenames, labels):
+            self.label_map[filename] = int(label) * 1.0 / MOD
 
     def _process_data(self):
         if self.image_list is not None:

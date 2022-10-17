@@ -16,6 +16,7 @@ import numpy as np
 import torch
 import torch.backends.cudnn as cudnn
 import torch.distributed as dist
+from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import KFold
 
 from timm.loss import LabelSmoothingCrossEntropy, SoftTargetCrossEntropy
@@ -115,13 +116,15 @@ def main(config):
     else:
         lr_scheduler = build_scheduler(config, optimizer, len(train_loader))
 
-    if config.AUG.MIXUP > 0.:
-        # smoothing is handled with mixup label transform
-        criterion = SoftTargetCrossEntropy()
-    elif config.MODEL.LABEL_SMOOTHING > 0.:
-        criterion = LabelSmoothingCrossEntropy(smoothing=config.MODEL.LABEL_SMOOTHING)
-    else:
-        criterion = torch.nn.CrossEntropyLoss()
+    # if config.AUG.MIXUP > 0.:
+    #     # smoothing is handled with mixup label transform
+    #     criterion = SoftTargetCrossEntropy()
+    # elif config.MODEL.LABEL_SMOOTHING > 0.:
+    #     criterion = LabelSmoothingCrossEntropy(smoothing=config.MODEL.LABEL_SMOOTHING)
+    # else:
+    #     criterion = torch.nn.CrossEntropyLoss()
+
+    criterion = torch.nn.SmoothL1Loss()
 
     '''
     if config.MODEL.PRETRAINED and (not config.MODEL.RESUME):
@@ -227,7 +230,8 @@ def train_one_epoch(config, model, criterion, data_loader, optimizer, epoch, mix
 
 @torch.no_grad()
 def validate(config, data_loader, model):
-    criterion = torch.nn.CrossEntropyLoss()
+    # criterion = torch.nn.CrossEntropyLoss()
+    criterion = torch.nn.SmoothL1Loss()
     model.eval()
 
     batch_time = AverageMeter()
@@ -246,15 +250,19 @@ def validate(config, data_loader, model):
 
         # measure accuracy and record loss
         loss = criterion(output, target)
-        acc1, acc5 = accuracy(output, target, topk=(1, 1))
-
+        # acc1, acc5 = accuracy(output, target, topk=(1, 1))
+        # print(output.size(), target.size())
+        # print(output)
+        # print(target)
+        abs_mean_error = mean_absolute_error(output.cpu().detach().numpy(), target.cpu().detach().numpy())
+        print(abs_mean_error)
         # acc1 = reduce_tensor(acc1)
         # acc5 = reduce_tensor(acc5)
         # loss = reduce_tensor(loss)
 
         loss_meter.update(loss.item(), target.size(0))
-        acc1_meter.update(acc1.item(), target.size(0))
-        acc5_meter.update(acc5.item(), target.size(0))
+        acc1_meter.update(abs_mean_error, target.size(0))
+        # acc5_meter.update(acc5.item(), target.size(0))
 
         # measure elapsed time
         batch_time.update(time.time() - end)
